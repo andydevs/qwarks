@@ -1,10 +1,6 @@
-#[cfg(test)]
-pub mod tests {
-    use wasm_bindgen_test::*;
-    wasm_bindgen_test_configure!(run_in_browser);
+use wasm_bindgen::prelude::*;
 
-    #[wasm_bindgen_test]
-    fn test_works() {
-        assert_eq!(1, 1);
-    }
+#[wasm_bindgen]
+pub fn my_func(a: i32, b: i32, c: i32) -> i32 {
+    a * b + c
 }
