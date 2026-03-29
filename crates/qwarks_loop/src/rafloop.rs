@@ -41,15 +41,17 @@ impl RAFLoop {
         let inner_telemetry = Rc::clone(&telemetry);
         *frame_callback.borrow_mut() = Some(Closure::new(move |timestamp| {
             // Create ctx and do callback
-            let state = inner_telemetry.borrow();
-            let delta = state
-                .last_timestamp
-                .map(|last| timestamp - last)
-                .unwrap_or(0.0);
-            let ctx = FrameCtx {
-                frame_count: state.frame_count,
-                timestamp,
-                delta,
+            let ctx = {
+                let state = inner_telemetry.borrow();
+                let delta = state
+                    .last_timestamp
+                    .map(|last| timestamp - last)
+                    .unwrap_or(0.0);
+                FrameCtx {
+                    frame_count: state.frame_count,
+                    timestamp,
+                    delta,
+                }
             };
             callback(ctx);
 
