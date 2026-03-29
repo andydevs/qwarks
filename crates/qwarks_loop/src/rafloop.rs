@@ -41,22 +41,11 @@ impl RAFLoop {
         let inner_telemetry = Rc::clone(&telemetry);
         *frame_callback.borrow_mut() = Some(Closure::new(move |timestamp| {
             // Create ctx and do callback
-            let ctx = {
-                let state = inner_telemetry.borrow();
-                let delta = state
-                    .last_timestamp
-                    .map(|last| timestamp - last)
-                    .unwrap_or(0.0);
-                FrameCtx {
-                    frame_count: state.frame_count,
-                    timestamp,
-                    delta,
-                }
-            };
+            let ctx = inner_telemetry.borrow().get_frame_ctx(timestamp);
             callback(ctx);
 
             // Request new frame
-            let id = {
+            let frame_request_id = {
                 let new_frame = inner_callback.borrow();
                 let new_frame = new_frame.as_ref().expect("Loop closure is Sone");
                 inner_adapter
@@ -65,22 +54,22 @@ impl RAFLoop {
             };
 
             // Update telemetry
-            let mut tm = inner_telemetry.borrow_mut();
-            tm.frame_count += 1;
-            tm.last_timestamp = Some(timestamp);
-            tm.pending_id = Some(id);
+            inner_telemetry
+                .borrow_mut()
+                .update(timestamp, frame_request_id);
         }));
 
-        // Call first frame. Update telemetry
+        // Call first frame. Initialize telemetry
         let id = {
             let callback = frame_callback.borrow();
-            let callback = callback
-                .as_ref()
-                .ok_or(JsValue::from("Loop closure was None during frame request"))?;
+            let callback = callback.as_ref().ok_or(JsValue::from(
+                "Loop closure was None during first frame request",
+            ))?;
             adapter.request_animation_frame(callback)
         }?;
         telemetry.borrow_mut().pending_id = Some(id);
 
+        // Return RAF Loop
         Ok(Self {
             frame_callback,
             telemetry,
