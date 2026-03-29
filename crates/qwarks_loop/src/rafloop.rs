@@ -1,84 +1,98 @@
-use std::{
-    cell::{Cell, RefCell},
-    rc::Rc,
+use crate::{
+    FrameCtx,
+    browser::{self, BrowserAdapter},
+    telemetry::Telemetry,
 };
+use std::{cell::RefCell, rc::Rc};
+use wasm_bindgen::{JsValue, prelude::Closure};
 
-use wasm_bindgen::{JsCast, JsValue, closure::Closure};
-use web_sys::window;
-
-use super::context::Ctx;
-use super::state::State;
-
-/// Shared, nullable handle to the `requestAnimationFrame` closure.
-type CbPtr = Rc<RefCell<Option<Closure<dyn FnMut(f64)>>>>;
-
-/// Calls `window.requestAnimationFrame` with the closure stored in `callback`.
-///
-/// Returns an error if the global `window` object is unavailable, if `callback`
-/// is `None`, or if the browser rejects the frame request.
-fn call_request_frame(callback: &CbPtr) -> Result<(), JsValue> {
-    window()
-        .ok_or(JsValue::from("Window was not defined"))?
-        .request_animation_frame(
-            callback
-                .borrow()
-                .as_ref()
-                .ok_or(JsValue::from("CbPtr was None during frame request"))?
-                .as_ref()
-                .unchecked_ref(),
-        )
-        .map_err(|_| JsValue::from("Error requesting new animation frame"))?;
-    Ok(())
+pub struct RAFLoop {
+    #[allow(unused)]
+    frame_callback: Rc<RefCell<Option<Closure<dyn FnMut(f64)>>>>,
+    telemetry: Rc<RefCell<Telemetry>>,
+    adapter: Rc<dyn browser::Adapter>,
 }
 
-/// A running `requestAnimationFrame` loop.
-///
-/// The loop starts immediately upon construction and calls the provided callback
-/// once per animation frame. It stops automatically when this handle is dropped.
-pub struct Loop(Rc<Cell<bool>>);
+impl RAFLoop {
+    pub fn new<F: FnMut(FrameCtx) + 'static>(callback: F) -> Result<Self, JsValue> {
+        let adapter = Rc::new(BrowserAdapter);
+        Self::with_adapter(callback, adapter)
+    }
 
-impl Loop {
-    /// Starts a new animation loop, calling `cb` with a [`Ctx`] on every frame.
-    ///
-    /// Returns `Err` if the initial `requestAnimationFrame` call fails (e.g. when
-    /// called outside a browser environment).
-    ///
-    /// Drop the returned [`Loop`] to stop the animation.
-    pub fn new<F: FnMut(Ctx) + 'static>(mut cb: F) -> Result<Self, JsValue> {
-        // Enable panic hook in case request frame fails internally
+    fn with_adapter<F: FnMut(FrameCtx) + 'static>(
+        mut callback: F,
+        adapter: Rc<dyn browser::Adapter>,
+    ) -> Result<Self, JsValue> {
+        // Enable panic hook in case anything fails here
         console_error_panic_hook::set_once();
 
-        // Initialize state
-        let mut state = State::new();
-        let self_ptr = Self(state.create_stop_signal());
-
-        // Setup callback
-        let outer: CbPtr = Rc::new(RefCell::new(None));
-        let inner = Rc::clone(&outer);
-        *outer.borrow_mut() = Some(Closure::new(move |timestamp| {
-            let ctx = state.get_ctx(timestamp);
-            cb(ctx);
-            state.update(timestamp);
-
-            // Drop callback if stop is called. Else request new frame
-            if state.stopped() {
-                inner.take();
-            } else {
-                call_request_frame(&inner).unwrap();
-            }
+        // Setup callback and telemetry
+        let frame_callback: Rc<RefCell<Option<Closure<dyn FnMut(f64)>>>> =
+            Rc::new(RefCell::new(None));
+        let telemetry = Rc::new(RefCell::new(Telemetry {
+            frame_count: 0,
+            pending_id: None,
+            last_timestamp: None,
         }));
 
-        // Call the first animation frame consuming first ptr
-        call_request_frame(&outer)?;
+        // Create copies and move to inner callback
+        let inner_callback = Rc::clone(&frame_callback);
+        let inner_adapter = Rc::clone(&adapter);
+        let inner_telemetry = Rc::clone(&telemetry);
+        *frame_callback.borrow_mut() = Some(Closure::new(move |timestamp| {
+            // Create ctx and do callback
+            let state = inner_telemetry.borrow();
+            let delta = state
+                .last_timestamp
+                .map(|last| timestamp - last)
+                .unwrap_or(0.0);
+            let ctx = FrameCtx {
+                frame_count: state.frame_count,
+                timestamp,
+                delta,
+            };
+            callback(ctx);
 
-        // Output with ptr
-        Ok(self_ptr)
+            // Request new frame
+            let id = {
+                let new_frame = inner_callback.borrow();
+                let new_frame = new_frame.as_ref().expect("Loop closure is Sone");
+                inner_adapter
+                    .request_animation_frame(new_frame)
+                    .expect("Request animation frame successful")
+            };
+
+            // Update telemetry
+            let mut tm = inner_telemetry.borrow_mut();
+            tm.frame_count += 1;
+            tm.last_timestamp = Some(timestamp);
+            tm.pending_id = Some(id);
+        }));
+
+        // Call first frame. Update telemetry
+        let id = {
+            let callback = frame_callback.borrow();
+            let callback = callback
+                .as_ref()
+                .ok_or(JsValue::from("Loop closure was None during frame request"))?;
+            adapter.request_animation_frame(callback)
+        }?;
+        telemetry.borrow_mut().pending_id = Some(id);
+
+        Ok(Self {
+            frame_callback,
+            telemetry,
+            adapter,
+        })
     }
 }
 
-impl Drop for Loop {
-    /// Sets the stop flag, causing the loop to exit after the current frame.
+impl Drop for RAFLoop {
     fn drop(&mut self) {
-        self.0.set(true);
+        if let Some(id) = self.telemetry.borrow().pending_id {
+            self.adapter
+                .cancel_animation_frame(id)
+                .expect("Cancel animation frame")
+        }
     }
 }

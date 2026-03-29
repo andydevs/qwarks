@@ -1,6 +1,6 @@
 /// Per-frame context passed to the animation loop callback.
 #[derive(Debug)]
-pub struct Ctx {
+pub struct FrameCtx {
     /// Number of frames that have been rendered so far, starting at 1.
     pub frame_count: u32,
     /// The `DOMHighResTimeStamp` provided by `requestAnimationFrame` for the current frame,
