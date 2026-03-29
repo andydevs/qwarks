@@ -6,19 +6,54 @@ use crate::{
 use std::{cell::RefCell, rc::Rc};
 use wasm_bindgen::{JsValue, prelude::Closure};
 
+/// An active `requestAnimationFrame` loop.
+///
+/// While this value is alive the browser will invoke your callback once per
+/// animation frame.  When the value is dropped the pending frame request is
+/// cancelled via `cancelAnimationFrame`, stopping the loop.
+///
+/// # Example
+///
+/// ```no_run
+/// use wasm_raf_handler::{RAFLoop, FrameCtx};
+///
+/// let _loop = RAFLoop::new(|ctx: FrameCtx| {
+///     // update your scene here
+/// }).expect("Failed to start RAF loop");
+/// // Loop runs until `_loop` is dropped.
+/// ```
 pub struct RAFLoop {
+    /// The recurring closure passed to `requestAnimationFrame`.
+    ///
+    /// Kept alive for the lifetime of the loop; the `#[allow(unused)]`
+    /// suppresses the dead-code lint because the value is never read — it
+    /// exists solely to prevent the closure from being dropped.
     #[allow(unused)]
     frame_callback: Rc<RefCell<Option<Closure<dyn FnMut(f64)>>>>,
+    /// Shared loop state (frame count, last timestamp, pending request ID).
     telemetry: Rc<RefCell<Telemetry>>,
+    /// Adapter used to call `requestAnimationFrame` / `cancelAnimationFrame`.
     adapter: Rc<dyn browser::Adapter>,
 }
 
 impl RAFLoop {
+    /// Creates a new animation loop using the real browser APIs.
+    ///
+    /// `callback` is called once per animation frame with a [`FrameCtx`]
+    /// containing timing information for that frame.
+    ///
+    /// Returns `Err` if the initial `requestAnimationFrame` call fails (e.g.
+    /// when `window` is not available).
     pub fn new<F: FnMut(FrameCtx) + 'static>(callback: F) -> Result<Self, JsValue> {
         let adapter = Rc::new(BrowserAdapter);
         Self::with_adapter(callback, adapter)
     }
 
+    /// Creates a new animation loop driven by a custom [`browser::Adapter`].
+    ///
+    /// This is the internal constructor used by [`new`](Self::new) and exposed
+    /// for testing with mock adapters.  The loop starts immediately: the first
+    /// frame is requested before this function returns.
     fn with_adapter<F: FnMut(FrameCtx) + 'static>(
         mut callback: F,
         adapter: Rc<dyn browser::Adapter>,
@@ -79,6 +114,10 @@ impl RAFLoop {
 }
 
 impl Drop for RAFLoop {
+    /// Cancels the pending animation frame request when the loop is dropped.
+    ///
+    /// If no request is pending (which should not happen in normal use) this
+    /// is a no-op.  Panics if `cancelAnimationFrame` returns an error.
     fn drop(&mut self) {
         if let Some(id) = self.telemetry.borrow().pending_id {
             self.adapter
