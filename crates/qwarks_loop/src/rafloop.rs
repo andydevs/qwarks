@@ -9,8 +9,13 @@ use web_sys::window;
 use super::context::Ctx;
 use super::state::State;
 
+/// Shared, nullable handle to the `requestAnimationFrame` closure.
 type CbPtr = Rc<RefCell<Option<Closure<dyn FnMut(f64)>>>>;
 
+/// Calls `window.requestAnimationFrame` with the closure stored in `callback`.
+///
+/// Returns an error if the global `window` object is unavailable, if `callback`
+/// is `None`, or if the browser rejects the frame request.
 fn call_request_frame(callback: &CbPtr) -> Result<(), JsValue> {
     window()
         .ok_or(JsValue::from("Window was not defined"))?
@@ -26,9 +31,19 @@ fn call_request_frame(callback: &CbPtr) -> Result<(), JsValue> {
     Ok(())
 }
 
+/// A running `requestAnimationFrame` loop.
+///
+/// The loop starts immediately upon construction and calls the provided callback
+/// once per animation frame. It stops automatically when this handle is dropped.
 pub struct Loop(Rc<Cell<bool>>);
 
 impl Loop {
+    /// Starts a new animation loop, calling `cb` with a [`Ctx`] on every frame.
+    ///
+    /// Returns `Err` if the initial `requestAnimationFrame` call fails (e.g. when
+    /// called outside a browser environment).
+    ///
+    /// Drop the returned [`Loop`] to stop the animation.
     pub fn new<F: FnMut(Ctx) + 'static>(mut cb: F) -> Result<Self, JsValue> {
         // Enable panic hook in case request frame fails internally
         console_error_panic_hook::set_once();
@@ -62,6 +77,7 @@ impl Loop {
 }
 
 impl Drop for Loop {
+    /// Sets the stop flag, causing the loop to exit after the current frame.
     fn drop(&mut self) {
         self.0.set(true);
     }
