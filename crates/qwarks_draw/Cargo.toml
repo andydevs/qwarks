@@ -1,0 +1,21 @@
+[package]
+name = "jarsdraw"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+console_error_panic_hook = "0.1.7"
+wasm-bindgen = "0.2.114"
+web-sys = { version = "0.3.91", features = [
+    "Window",
+    "Document",
+    "HtmlCanvasElement",
+    "CanvasRenderingContext2d",
+    "console",
+] }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.64"
