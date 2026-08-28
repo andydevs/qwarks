@@ -18,15 +18,9 @@ impl Canvas {
             .document()
             .ok_or(JsValue::from("Unable to load document"))?
             .query_selector(selector)?
-            .ok_or(JsValue::from(format!(
-                "Could not find html element by selector \"{selector}\""
-            )))?
+            .ok_or(JsValue::from(format!("Cannot find element by selector \"{selector}\"")))?
             .dyn_into::<HtmlCanvasElement>()
-            .map_err(|_| {
-                JsValue::from(format!(
-                    "Element with selector \"{selector}\" can not be interpreted as canvas"
-                ))
-            })?;
+            .map_err(|_| JsValue::from(format!("Selector \"{selector}\" can not be interpreted as canvas")))?;
         let ctx = canvas
             .get_context("2d")?
             .ok_or(JsValue::from("2d rendering context unavailable"))?
