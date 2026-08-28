@@ -6,7 +6,9 @@
 mod canvas;
 mod draw;
 mod polyline;
+mod styled;
 
 pub use canvas::Canvas;
 pub use draw::Draw;
 pub use polyline::Polyline;
+pub use styled::{Shape, Style, Styled};

@@ -1,4 +1,4 @@
-use crate::{Canvas, Draw};
+use crate::{Canvas, Draw, Shape};
 
 pub struct Polyline {
     points: Vec<(f64, f64)>,
@@ -31,3 +31,5 @@ impl Draw for Polyline {
         }
     }
 }
+
+impl Shape for Polyline {}
