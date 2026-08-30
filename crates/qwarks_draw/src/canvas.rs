@@ -55,17 +55,14 @@ impl Canvas {
     /// Erases all pixels previously drawn to the canvas.
     pub fn clear(&mut self) {
         let (width, height) = self.dimensions();
-        web_sys::console::log_1(&"Clearing canvas".into());
         self.ctx.clear_rect(0.0, 0.0, width as f64, height as f64);
     }
 
     /// Returns the underlying 2D rendering context.
     ///
-    /// TEMPORARILY PUBLIC until I implement the draw trait
-    ///
     /// # Returns
     /// A reference to the canvas's `CanvasRenderingContext2d`.
-    pub fn ctx(&self) -> &CanvasRenderingContext2d {
+    pub(crate) fn ctx(&self) -> &CanvasRenderingContext2d {
         &self.ctx
     }
 
