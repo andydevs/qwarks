@@ -1,53 +1,60 @@
 //! A multi-point connected line segment primitive.
 
+use crate::macros::builder_fns;
 use crate::{Canvas, Draw};
 
 /// A connected sequence of line segments defined by an ordered list of points.
-pub struct Polyline {
-    points: Vec<(f64, f64)>,
+///
+/// Borrows its points rather than owning them, since polylines are typically
+/// constructed immediately before being drawn and discarded afterward.
+pub struct Polyline<'a> {
+    points: &'a [(f64, f64)],
+    closed: bool,
 }
 
-impl Polyline {
-    /// Creates an empty polyline with no points.
-    ///
-    /// # Returns
-    /// A [`Polyline`] with an empty point list.
-    pub fn new() -> Self {
-        Self { points: Vec::default() }
-    }
-
+impl<'a> Polyline<'a> {
     /// Creates a polyline from an ordered slice of points.
     ///
     /// # Parameters
     /// - `points`: the `(x, y)` coordinates to connect, in drawing order.
     ///
     /// # Returns
-    /// A [`Polyline`] containing a copy of `points`.
-    pub fn from_points(points: &[(f64, f64)]) -> Self {
-        Self {
-            points: points.to_vec(),
-        }
+    /// A [`Polyline`] borrowing `points`, open (not closed) by default.
+    pub fn new(points: &'a [(f64, f64)]) -> Self {
+        Self { points, closed: false }
     }
 }
 
-impl Draw for Polyline {
+builder_fns! {
+    impl<'a> Polyline<'a> {
+        /// if `true`, the stroked path connects the last point back to the first.
+        pub closed: bool,
+    }
+}
+
+impl<'a> Draw for Polyline<'a> {
     /// Strokes a single connected path through this polyline's points, using the canvas
-    /// context's current stroke style and line width.
+    /// context's current stroke style and line width. If [`closed`](Polyline::closed) was
+    /// set, the path is closed back to its first point before stroking.
     ///
     /// # Side Effects
-    /// Issues `beginPath`/`moveTo`/`lineTo`/`stroke` calls on `canvas`'s 2D rendering
-    /// context. Does nothing if the polyline has no points.
+    /// Issues `beginPath`/`moveTo`/`lineTo`/`closePath`/`stroke` calls on `canvas`'s 2D
+    /// rendering context. Does nothing if the polyline has no points.
     fn draw(&self, canvas: &Canvas) {
         let Some((x0, y0)) = self.points.get(0) else {
             return;
         };
+        let Some(rest) = self.points.get(1..) else {
+            return;
+        };
         canvas.ctx().begin_path();
         canvas.ctx().move_to(*x0, *y0);
-        if let Some(rest) = self.points.get(1..) {
-            for (x, y) in rest {
-                canvas.ctx().line_to(*x, *y);
-            }
-            canvas.ctx().stroke();
+        for (x, y) in rest {
+            canvas.ctx().line_to(*x, *y);
         }
+        if self.closed {
+            canvas.ctx().close_path();
+        }
+        canvas.ctx().stroke();
     }
 }

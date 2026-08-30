@@ -10,6 +10,7 @@
 
 mod canvas;
 mod draw;
+mod macros;
 mod polyline;
 mod styled;
 

@@ -1,5 +1,6 @@
 //! Stroke styling for [`Draw`] shapes, applied around a [`Draw`] call.
 
+use crate::macros::builder_fns;
 use crate::{Canvas, Draw};
 
 /// Stroke appearance applied when drawing a [`Styled`] shape.
@@ -38,30 +39,16 @@ impl<D: Draw> Styled<D> {
             style: Style::default(),
         }
     }
+}
 
-    /// Sets the stroke color.
-    ///
-    /// # Parameters
-    /// - `stroke_style`: any color string accepted by `CanvasRenderingContext2d`'s stroke
-    ///   style (e.g. a CSS color name or hex code).
-    ///
-    /// # Returns
-    /// `Self`, for method chaining.
-    pub fn stroke(mut self, stroke_style: &str) -> Self {
-        self.style.stroke = String::from(stroke_style);
-        self
-    }
+builder_fns! {
+    impl<D: Draw> Styled<D> {
+        /// any color string accepted by `CanvasRenderingContext2d`'s stroke style (e.g. a
+        /// CSS color name or hex code).
+        pub stroke: &str => style.stroke,
 
-    /// Sets the stroke line width.
-    ///
-    /// # Parameters
-    /// - `stroke_width`: the line width in pixels.
-    ///
-    /// # Returns
-    /// `Self`, for method chaining.
-    pub fn line_width(mut self, stroke_width: f64) -> Self {
-        self.style.line_width = stroke_width;
-        self
+        /// the line width in pixels.
+        pub line_width: f64 => style.line_width,
     }
 }
 
