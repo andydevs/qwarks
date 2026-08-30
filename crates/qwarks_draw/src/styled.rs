@@ -18,25 +18,13 @@ impl Default for Style {
     }
 }
 
-/// A [`Draw`]able primitive that can be wrapped in a [`Styled`] to customize its stroke
-/// appearance.
-pub trait Shape: Draw + Sized {
-    /// Wraps this shape in a [`Styled`] with the default [`Style`].
-    ///
-    /// # Returns
-    /// A [`Styled`] wrapping `self`, ready for further style customization.
-    fn into_styled(self) -> Styled<Self> {
-        Styled::new(self)
-    }
-}
-
 /// A [`Shape`] paired with the [`Style`] it should be drawn with.
-pub struct Styled<S: Shape> {
-    shape: S,
+pub struct Styled<D: Draw> {
+    shape: D,
     style: Style,
 }
 
-impl<D: Shape> Styled<D> {
+impl<D: Draw> Styled<D> {
     /// Wraps `shape` with the default [`Style`].
     ///
     /// # Parameters
@@ -44,7 +32,7 @@ impl<D: Shape> Styled<D> {
     ///
     /// # Returns
     /// A [`Styled`] wrapping `shape` with the default style.
-    fn new(shape: D) -> Self {
+    pub fn new(shape: D) -> Self {
         Self {
             shape,
             style: Style::default(),
@@ -77,7 +65,7 @@ impl<D: Shape> Styled<D> {
     }
 }
 
-impl<S: Shape> Draw for Styled<S> {
+impl<D: Draw> Draw for Styled<D> {
     /// Applies this wrapper's [`Style`] to the canvas context, draws the wrapped shape,
     /// then restores the previous context state.
     ///

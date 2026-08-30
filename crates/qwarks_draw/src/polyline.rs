@@ -1,6 +1,6 @@
 //! A multi-point connected line segment primitive.
 
-use crate::{Canvas, Draw, Shape};
+use crate::{Canvas, Draw};
 
 /// A connected sequence of line segments defined by an ordered list of points.
 pub struct Polyline {
@@ -51,6 +51,3 @@ impl Draw for Polyline {
         }
     }
 }
-
-/// Marks [`Polyline`] as a [`Shape`] that can be wrapped in [`Styled`](crate::Styled).
-impl Shape for Polyline {}
