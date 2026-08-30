@@ -1,4 +1,4 @@
-//! Stroke styling for [`Shape`]s, applied around a [`Draw`] call.
+//! Stroke styling for [`Draw`] shapes, applied around a [`Draw`] call.
 
 use crate::{Canvas, Draw};
 
@@ -18,7 +18,7 @@ impl Default for Style {
     }
 }
 
-/// A [`Shape`] paired with the [`Style`] it should be drawn with.
+/// A [`Draw`] shape paired with the [`Style`] it should be drawn with.
 pub struct Styled<D: Draw> {
     shape: D,
     style: Style,
