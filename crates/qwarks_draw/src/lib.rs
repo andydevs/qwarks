@@ -7,20 +7,17 @@
 //! - [`Draw`] is implemented by anything that can render itself onto a [`Canvas`].
 //! - [`Polyline`] is a connected-line-segment [`Draw`] primitive.
 //! - [`Circle`] is a fillable/strokeable circle [`Draw`] primitive.
-//! - [`Line`] is a fillable/strokeable single-segment [`Draw`] primitive.
+//! - [`Line`] is a single-segment [`Draw`] primitive.
+//! - [`Rect`] is a fillable/strokeable axis-aligned rectangle [`Draw`] primitive.
 //! - [`Styled`] add chainable stroke styling on top of a [`Draw`] primitive.
 
 mod canvas;
-mod circle;
 mod draw;
-mod line;
 mod macros;
-mod polyline;
+mod primitives;
 mod styled;
 
 pub use canvas::Canvas;
-pub use circle::Circle;
 pub use draw::Draw;
-pub use line::Line;
-pub use polyline::Polyline;
+pub use primitives::{Circle, Line, Polyline, Rect};
 pub use styled::{Style, Styled};
