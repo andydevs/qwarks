@@ -23,7 +23,7 @@ impl Default for Style {
 
 /// A [`Draw`] shape paired with the [`Style`] it should be drawn with.
 pub struct Styled<D: Draw> {
-    shape: D,
+    inner: D,
     style: Style,
 }
 
@@ -35,11 +35,9 @@ impl<D: Draw> Styled<D> {
     ///
     /// # Returns
     /// A [`Styled`] wrapping `shape` with the default style.
-    pub fn new(shape: D) -> Self {
-        Self {
-            shape,
-            style: Style::default(),
-        }
+    pub fn new(inner: D) -> Self {
+        let style = Style::default();
+        Self { inner, style }
     }
 }
 
@@ -70,7 +68,7 @@ impl<D: Draw> Draw for Styled<D> {
         canvas.ctx().set_stroke_style_str(&self.style.stroke);
         canvas.ctx().set_line_width(self.style.line_width);
         canvas.ctx().set_fill_style_str(&self.style.fill);
-        canvas.draw(&self.shape);
+        self.inner.draw(canvas);
         canvas.ctx().restore();
     }
 }
