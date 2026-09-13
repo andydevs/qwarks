@@ -15,7 +15,7 @@ use wasm_bindgen::{JsValue, prelude::Closure};
 /// # Example
 ///
 /// ```no_run
-/// use wasm_raf_handler::{RAFLoop, FrameCtx};
+/// use qwarks_loop::{RAFLoop, FrameCtx};
 ///
 /// let _loop = RAFLoop::new(|ctx: FrameCtx| {
 ///     // update your scene here

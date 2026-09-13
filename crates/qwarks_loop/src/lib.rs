@@ -11,7 +11,7 @@
 //! # Example
 //!
 //! ```no_run
-//! use wasm_raf_handler::{RAFLoop, FrameCtx};
+//! use qwarks_loop::{RAFLoop, FrameCtx};
 //!
 //! let _loop = RAFLoop::new(|ctx: FrameCtx| {
 //!     // Called once per animation frame.
