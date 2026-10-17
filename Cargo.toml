@@ -7,11 +7,16 @@ version = "0.1.0"
 edition = "2024"
 license = "MIT"
 authors = ["Anshul Kharbanda"]
-repository = "https://github.com/akanshul97/qwarks"
+repository = "https://github.com/andydevs/qwarks"
 
 [workspace.dependencies]
 qwarks = { path = "crates/qwarks" }
-wasm-bindgen = "0.2"
+qwarks_draw = { path = "crates/qwarks_draw" }
+qwarks_loop = { path = "crates/qwarks_loop" }
+console_error_panic_hook = "0.1.7"
+wasm-bindgen = "0.2.114"
+wasm-bindgen-test = "0.3.64"
+web-sys = "0.3.91"
 
 [profile.release]
 opt-level = "s"
