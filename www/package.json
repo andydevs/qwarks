@@ -1,0 +1,16 @@
+{
+  "name": "qwarks-www",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "wasm": "wasm-pack build --target web --out-dir pkg --out-name qwarks_www",
+    "wasm:dev": "wasm-pack build --dev --target web --out-dir pkg --out-name qwarks_www",
+    "dev": "npm run wasm:dev && vite",
+    "build": "npm run wasm && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.3.4"
+  }
+}

@@ -1,0 +1,18 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "www"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Anshul Kharbanda"]
+repository = "https://github.com/akanshul97/qwarks"
+
+[workspace.dependencies]
+qwarks = { path = "crates/qwarks" }
+wasm-bindgen = "0.2"
+
+[profile.release]
+opt-level = "s"
+lto = true

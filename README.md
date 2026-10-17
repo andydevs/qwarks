@@ -1,2 +1,19 @@
 # qwarks
 Quick Webassembly Animation Rigidbody Kinematics Simulator
+
+## Layout
+
+- `crates/` — public library crates (`qwarks`, ...)
+- `www/` — wasm-bindgen crate (`qwarks-www`) plus a Vite site that loads it
+
+## Development
+
+Requires Rust with the `wasm32-unknown-unknown` target, [wasm-pack](https://rustwasm.github.io/wasm-pack/), and Node.js.
+
+```sh
+cargo test              # test the workspace
+cd www
+npm install
+npm run dev             # build wasm (dev) and start the Vite dev server
+npm run build           # build wasm (release) and bundle into www/dist
+```
