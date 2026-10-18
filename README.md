@@ -14,6 +14,7 @@ Requires Rust with the `wasm32-unknown-unknown` target, [wasm-pack](https://rust
 cargo test              # test the workspace
 cd www
 npm install
-npm run dev             # build wasm (dev) and start the Vite dev server
+npm run dev             # build wasm (dev) and start the Vite dev server;
+                        # Rust changes rebuild the wasm and reload the page
 npm run build           # build wasm (release) and bundle into www/dist
 ```
