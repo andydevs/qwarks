@@ -22,10 +22,11 @@
 //! }).expect("Failed to start animation loop");
 //! ```
 
-mod browser;
-mod context;
+// Modules
+mod adapter;
 mod rafloop;
 mod telemetry;
 
-pub use context::FrameCtx;
+// Public exports
 pub use rafloop::RAFLoop;
+pub use telemetry::FrameCtx;
