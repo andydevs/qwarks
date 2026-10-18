@@ -1,13 +1,26 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>qwarks</title>
-  </head>
-  <body>
-    <h1>qwarks</h1>
-    <p id="version">Loading…</p>
-    <script type="module" src="/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>qwarks</title>
+  <style>
+    * {
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>QWARKS</h1>
+  <canvas id="spooky-canvas" width=600 height=400>
+  </canvas>
+  <script type="module" src="/main.js"></script>
+</body>
+
 </html>

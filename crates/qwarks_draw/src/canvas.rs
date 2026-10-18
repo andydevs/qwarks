@@ -53,7 +53,7 @@ impl Canvas {
     ///
     /// # Side Effects
     /// Erases all pixels previously drawn to the canvas.
-    pub fn clear(&mut self) {
+    pub fn clear(&self) {
         let (width, height) = self.dimensions();
         self.ctx.clear_rect(0.0, 0.0, width as f64, height as f64);
     }

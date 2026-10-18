@@ -10,7 +10,6 @@ authors = ["Anshul Kharbanda"]
 repository = "https://github.com/andydevs/qwarks"
 
 [workspace.dependencies]
-qwarks = { path = "crates/qwarks" }
 qwarks_draw = { path = "crates/qwarks_draw" }
 qwarks_loop = { path = "crates/qwarks_loop" }
 console_error_panic_hook = "0.1.7"

@@ -12,5 +12,8 @@ repository.workspace = true
 crate-type = ["cdylib"]
 
 [dependencies]
-qwarks.workspace = true
+qwarks_draw.workspace = true
+qwarks_loop.workspace = true
+console_error_panic_hook.workspace = true
 wasm-bindgen.workspace = true
+web-sys = { workspace = true, features = ["console"] }
