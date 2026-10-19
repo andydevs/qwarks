@@ -3,8 +3,8 @@ Quick Webassembly Animation Rigidbody Kinematics Simulator
 
 ## Layout
 
-- `crates/` — public library crates (`qwarks`, `qwarks_draw`, `qwarks_loop`)
-- `www/` — wasm-bindgen crate (`qwarks-www`) plus a Vite site that loads it
+- `crates/` — public library crates (`qwarks_draw`, `qwarks_loop`)
+- `www/` — wasm-bindgen crate (`qwarks_www`) plus a Vite site that loads it
 
 ## Development
 
