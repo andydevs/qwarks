@@ -16,7 +16,8 @@ workspace that compiles to WebAssembly and runs in the browser.
   mocked; `BrowserAdapter` is the real implementation. `rlib` only.
 - `www/` — `qwarks-www` `cdylib` crate (wasm-bindgen entry point in
   `src/lib.rs`, `log!`/`warn!`/`error!` console macros in `src/console.rs`)
-  plus a Vite site (`index.html`, `main.js`, `vite.config.js`).
+  plus a Vite site (`index.html`, `main.js`, `vite.config.js`, and the
+  wasm-pack build/watch plugin in `plugins/wasm-pack.js`).
 - `www/pkg/`, `www/dist/`, `target/` are build output and are gitignored.
 
 Shared dependency versions and package metadata live in the root `Cargo.toml`
@@ -35,7 +36,7 @@ cd www && npm run build              # wasm-pack (release) + bundle into www/dis
 ```
 
 Requires the `wasm32-unknown-unknown` target, `wasm-pack`, and Node.js.
-`vite.config.js` runs `wasm-pack build --target web --out-dir pkg --out-name qwarks_www`
+`plugins/wasm-pack.js` runs `wasm-pack build --target web --out-dir pkg --out-name qwarks_www`
 from `www/` and watches the workspace's Rust sources.
 
 ## Conventions
