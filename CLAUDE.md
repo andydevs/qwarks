@@ -18,6 +18,8 @@ workspace that compiles to WebAssembly and runs in the browser.
   `src/lib.rs`, `log!`/`warn!`/`error!` console macros in `src/console.rs`)
   plus a Vite site (`index.html`, `main.js`, `vite.config.js`, and the
   wasm-pack build/watch plugin in `plugins/wasm-pack.js`).
+- `.github/workflows/pages.yml` — builds `www/` and deploys it to GitHub
+  Pages on every push to `main` (or manually via `workflow_dispatch`).
 - `www/pkg/`, `www/dist/`, `target/` are build output and are gitignored.
 
 Shared dependency versions and package metadata live in the root `Cargo.toml`
