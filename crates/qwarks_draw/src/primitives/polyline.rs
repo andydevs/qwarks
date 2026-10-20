@@ -41,7 +41,7 @@ impl<'a> Draw for Polyline<'a> {
     /// Issues `beginPath`/`moveTo`/`lineTo`/`closePath`/`stroke` calls on `canvas`'s 2D
     /// rendering context. Does nothing if the polyline has no points.
     fn draw(&self, canvas: &Canvas) {
-        let Some((x0, y0)) = self.points.get(0) else {
+        let Some((x0, y0)) = self.points.first() else {
             return;
         };
         let Some(rest) = self.points.get(1..) else {
