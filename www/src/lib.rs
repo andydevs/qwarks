@@ -13,11 +13,12 @@ fn start() {
 
     // Create loop
     let my_canvas = Canvas::from_selector("#spooky-canvas").expect("Can't make canvas");
-    let (width, height) = my_canvas.dimensions();
-    let x0 = f64::from(width) / 2.0;
-    let y0 = f64::from(height) / 2.0;
+
     let rl = RAFLoop::new(move |ctx: FrameCtx| {
         let t = ctx.timestamp / 1000.0;
+        let (width, height) = my_canvas.dimensions();
+        let x0 = f64::from(width) / 2.0;
+        let y0 = f64::from(height) / 2.0;
         my_canvas.clear();
 
         // Circle 0

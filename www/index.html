@@ -9,19 +9,40 @@
     * {
       font-family: 'Courier New', Courier, monospace;
       background-color: black;
+      color: white;
     }
 
-    canvas {
-      border: 1px solid white;
+    #spooky-canvas {
+      border: 0.5px solid #363636;
+      width: 100%;
+      aspect-ratio: calc(4/3);
+    }
+
+    .page-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .page {
+      width: 75%;
+    }
+
+    @media screen and (max-width:500px) {
+      .page {
+        width: 100% !important;
+      }
     }
   </style>
 </head>
 
 <body>
-  <center>
-    <h1>QWARKS</h1>
-    <canvas id="spooky-canvas" width=900 height=600></canvas>
-  </center>
+  <div class="page-container">
+    <div class="page">
+      <h1>QWARKS</h1>
+      <canvas id="spooky-canvas" width=900 height=600></canvas>
+    </div>
+  </div>
   <script type="module" src="/main.js"></script>
 </body>
 
