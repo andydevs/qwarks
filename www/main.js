@@ -1,21 +1,20 @@
-import('./pkg/qwarks_www.js').then((qwarks) => qwarks.default())
+import { debounce } from 'lodash-es'
+import initQwarks, * as qwarks from './pkg/qwarks_www.js'
+await initQwarks()
 
-// Returns a function that delays calling `fn` until `delay` ms have passed
-// without another call (only the last call in a burst runs).
-let debounce = (fn, delay) => {
-    let timeout = null
-    return (...args) => {
-        clearTimeout(timeout)
-        timeout = setTimeout(() => fn(...args), delay)
-    }
-}
+// Extra supersampling applied on top of devicePixelRatio
+const SUPERSAMPLE = 2
 
-// Handle resizing
+// Handle resizing: match every showcase canvas's buffer to its displayed size,
+// scaled up by the device pixel ratio (crisp on HiDPI screens) and SUPERSAMPLE.
+// The ratio is read on each resize since it changes with zoom or moving monitors.
 let resize = (e) => {
     console.log('Resize event')
-    let canvas = document.getElementById('spooky-canvas')
-    canvas.width = canvas.clientWidth
-    canvas.height = canvas.clientHeight
+    let pixelScale = (window.devicePixelRatio || 1) * SUPERSAMPLE
+    for (let canvas of document.querySelectorAll('.showcase-canvas')) {
+        canvas.width = Math.round(canvas.clientWidth * pixelScale)
+        canvas.height = Math.round(canvas.clientHeight * pixelScale)
+    }
 }
 window.onresize = debounce(resize, 100)
 resize()

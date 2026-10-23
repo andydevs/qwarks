@@ -59,7 +59,7 @@ fn start() {
     log!("Anim loaded");
 
     // Create loop
-    let my_canvas = Canvas::from_selector("#spooky-canvas").expect("Can't make canvas");
+    let my_canvas = Canvas::from_selector("#solar-system").expect("Can't make canvas");
 
     let rl = RAFLoop::new(move |ctx: FrameCtx| {
         let t = ctx.timestamp / 1000.0;

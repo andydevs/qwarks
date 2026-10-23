@@ -9,6 +9,11 @@
         "preview": "vite preview"
     },
     "devDependencies": {
+        "@tailwindcss/vite": "^4.3.3",
+        "tailwindcss": "^4.3.3",
         "vite": "^8.3.4"
+    },
+    "dependencies": {
+        "lodash-es": "^4.18.1"
     }
 }

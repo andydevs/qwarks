@@ -8,13 +8,27 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="page-container">
-        <div class="page">
-            <h1>QWARKS</h1>
-            <canvas id="spooky-canvas" width=900 height=600></canvas>
-        </div>
-    </div>
+<body class="min-h-screen bg-black font-mono text-white">
+    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold tracking-widest">QWARKS</h1>
+            <p class="mt-2 text-sm text-neutral-400">
+                Quick WebAssembly Animation Rigidbody Kinematics Simulator
+            </p>
+        </header>
+
+        <section class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,22rem),1fr))] gap-6">
+            <!-- Solar system canvas -->
+            <article class="overflow-hidden rounded-lg border border-neutral-800 bg-neutral-950 transition-colors">
+                <canvas class="showcase-canvas block aspect-4/3 w-full" id="solar-system"></canvas>
+            </article>
+
+            <!-- More coming soon thing -->
+            <article class="grid place-items-center overflow-hidden">
+                <p class="text-2xl italic">More coming soon...</p>
+            </article>
+        </section>
+    </main>
     <script type="module" src="/main.js"></script>
 </body>
 

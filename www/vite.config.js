@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
 import wasmPackPlugin from './plugins/vite-plugin-wasm-pack.js'
 
 export default defineConfig({
-    plugins: [wasmPackPlugin()],
+    plugins: [tailwindcss(), wasmPackPlugin()],
     build: {
         rolldownOptions: {
             // wasm-pack-build's buildStart is slow by design, don't warn about it
