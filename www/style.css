@@ -1,0 +1,27 @@
+* {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: black;
+    color: white;
+}
+
+#spooky-canvas {
+    border: 0.5px solid #363636;
+    width: 100%;
+    aspect-ratio: calc(4/3);
+}
+
+.page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.page {
+    width: 75%;
+}
+
+@media screen and (max-width:500px) {
+    .page {
+        width: 100% !important;
+    }
+}

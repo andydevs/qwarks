@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            // Starts the Vite dev server (with the wasm-pack dev build) and
+            // opens the site in Firefox once the first wasm build finishes.
+            // Needs the "Debugger for Firefox" extension
+            // (firefox-devtools.vscode-firefox-debug).
+            "name": "Debug (Firefox)",
+            "type": "firefox",
+            "request": "launch",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/www",
+            "preLaunchTask": "npm: start - www",
+            "postDebugTask": "stop: npm start - www"
+        },
+        {
+            // Opens the site when the dev server is already running
+            // (cd www && npm start).
+            "name": "Debug (Attach Firefox)",
+            "type": "firefox",
+            "request": "launch",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/www"
+        }
+    ]
+}

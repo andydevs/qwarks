@@ -5,9 +5,35 @@
             "type": "npm",
             "script": "start",
             "path": "www",
-            "problemMatcher": [],
             "label": "npm: start - www",
-            "detail": "vite"
+            "detail": "vite",
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "wasm-pack",
+                "pattern": {
+                    "regexp": "\\[wasm-pack\\] (wasm-pack exited with code \\d+|couldn't run wasm-pack: .*)$",
+                    "message": 1
+                },
+                "background": {
+                    "beginsPattern": "\\[wasm-pack\\] Starting build",
+                    "endsPattern": "\\[wasm-pack\\] (Build successful!|wasm-pack exited|couldn't run wasm-pack)"
+                }
+            }
+        },
+        {
+            "label": "stop: npm start - www",
+            "type": "shell",
+            "command": "echo ${input:terminateDevServer}",
+            "presentation": { "reveal": "never" },
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "terminateDevServer",
+            "type": "command",
+            "command": "workbench.action.tasks.terminate",
+            "args": "npm: start - www"
         }
     ]
 }

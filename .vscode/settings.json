@@ -1,0 +1,12 @@
+{
+    "files.exclude": {
+        "www/pkg/**/*": true,
+        "www/**/node_modules/": true,
+        "www/**/pkg/": true,
+        "www/**/dist/": true,
+        "**/debug/": true,
+        "**/target/": true,
+        "**/*.rs.bk": true,
+        "**/*.pdb": true
+    }
+}
