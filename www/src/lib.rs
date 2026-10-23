@@ -5,6 +5,53 @@ use qwarks_draw::{Canvas, Circle, Draw, Styled};
 use qwarks_loop::{FrameCtx, RAFLoop};
 use wasm_bindgen::prelude::*;
 
+struct Orbit {
+    velocity: f64,
+    radius: f64,
+}
+
+impl Orbit {
+    fn position(&self, t: f64) -> (f64, f64) {
+        let (u, v) = (self.velocity * t).sin_cos();
+        let x = u * self.radius;
+        let y = v * self.radius;
+        (x, y)
+    }
+}
+
+#[derive(Clone, Copy)]
+struct BodyShape {
+    radius: f64,
+    color: &'static str,
+}
+
+impl BodyShape {
+    fn into_body(self, x: f64, y: f64) -> Body {
+        Body { x, y, shape: self }
+    }
+}
+
+struct Body {
+    x: f64,
+    y: f64,
+    shape: BodyShape,
+}
+
+impl Body {
+    fn orbiting(&self, t: f64, orbit: Orbit, shape: BodyShape) -> Self {
+        let (u, v) = orbit.position(t);
+        Self { x: self.x + u, y: self.y + v, shape }
+    }
+}
+
+impl Draw for Body {
+    fn draw(&self, canvas: &Canvas) {
+        let circle = Circle::new(self.x, self.y, self.shape.radius).fill(true).stroke(true);
+        let styled = Styled::new(circle).fill(self.shape.color);
+        styled.draw(canvas);
+    }
+}
+
 /// Runs when the module is initialized.
 #[wasm_bindgen(start)]
 fn start() {
@@ -21,66 +68,65 @@ fn start() {
         let y0 = f64::from(height) / 2.0;
         my_canvas.clear();
 
-        // Circle 0
-        let circle0 = Circle::new(x0, y0, 20.0).fill(true).stroke(false);
-        let circle0 = Styled::new(circle0).fill("#aaaa00");
-        circle0.draw(&my_canvas);
+        // Solar System
+        let sun = BodyShape { radius: 20.0, color: "#fbb800" }.into_body(x0, y0);
+        let red_planet = sun.orbiting(
+            t,
+            Orbit { radius: 60.0, velocity: 4.0 },
+            BodyShape { radius: 4.0, color: "#ff3c00" },
+        );
+        let blue_planet = sun.orbiting(
+            t,
+            Orbit { radius: 120.0, velocity: 3.0 },
+            BodyShape { radius: 8.0, color: "#00aaff" },
+        );
+        let inner_moon = blue_planet.orbiting(
+            t,
+            Orbit { radius: 20.0, velocity: 8.0 },
+            BodyShape { radius: 2.0, color: "#bbbbbb" },
+        );
+        let gas_giant = sun.orbiting(
+            t,
+            Orbit { radius: 200.0, velocity: 1.0 },
+            BodyShape { radius: 10.0, color: "#ccbb99" },
+        );
+        let gg_moon_1 = gas_giant.orbiting(
+            t,
+            Orbit { radius: 17.0, velocity: 8.0 },
+            BodyShape { radius: 2.0, color: "#c4ac9f" },
+        );
+        let gg_moon_2 = gas_giant.orbiting(
+            t,
+            Orbit { radius: 25.0, velocity: 6.0 },
+            BodyShape { radius: 2.0, color: "#8a817c" },
+        );
+        let gg_moon_3 = gas_giant.orbiting(
+            t,
+            Orbit { radius: 35.0, velocity: 3.0 },
+            BodyShape { radius: 2.0, color: "#bbbbbb" },
+        );
+        let ice_giant = sun.orbiting(
+            t,
+            Orbit { radius: 300.0, velocity: 0.5 },
+            BodyShape { radius: 8.0, color: "#4400aa" },
+        );
+        let ig_moon_1 = ice_giant.orbiting(
+            t,
+            Orbit { radius: 15.0, velocity: 1.5 },
+            BodyShape { radius: 2.0, color: "#aabbcc" },
+        );
 
-        // Circle 1
-        let (x1, y1) = (3.0 * t).sin_cos();
-        let x1 = x0 + x1 * 120.0;
-        let y1 = y0 + y1 * 120.0;
-        let circle1 = Circle::new(x1, y1, 8.0).fill(true).stroke(false);
-        let circle1 = Styled::new(circle1).fill("#00aaff");
-        circle1.draw(&my_canvas);
-
-        // Circle 2
-        let (x2, y2) = (4.0 * t + 1.0).sin_cos();
-        let x2 = x0 + x2 * 60.0;
-        let y2 = y0 + y2 * 60.0;
-        let circle2 = Circle::new(x2, y2, 4.0).fill(true).stroke(false);
-        let circle2 = Styled::new(circle2).fill("#ff00aa");
-        circle2.draw(&my_canvas);
-
-        // Circle 3
-        let (x3, y3) = (8.0 * t + 1.0).sin_cos();
-        let x3 = x1 + x3 * 20.0;
-        let y3 = y1 + y3 * 20.0;
-        let circle3 = Circle::new(x3, y3, 2.0).fill(true).stroke(false);
-        let circle3 = Styled::new(circle3).fill("#bbbbbb");
-        circle3.draw(&my_canvas);
-
-        // Circle 4
-        let (x4, y4) = (1.0 * t + 1.0).sin_cos();
-        let x4 = x0 + x4 * 200.0;
-        let y4 = y0 + y4 * 200.0;
-        let circle4 = Circle::new(x4, y4, 10.0).fill(true).stroke(false);
-        let circle4 = Styled::new(circle4).fill("#ccbb99");
-        circle4.draw(&my_canvas);
-
-        // Circle 5
-        let (x5, y5) = (8.0 * t + 1.0).sin_cos();
-        let x5 = x4 + x5 * 17.0;
-        let y5 = y4 + y5 * 17.0;
-        let circle5 = Circle::new(x5, y5, 1.0).fill(true).stroke(false);
-        let circle5 = Styled::new(circle5).fill("#bbbbbb");
-        circle5.draw(&my_canvas);
-
-        // Circle 6
-        let (x6, y6) = (6.0 * t + 1.0).sin_cos();
-        let x6 = x4 + x6 * 25.0;
-        let y6 = y4 + y6 * 25.0;
-        let circle6 = Circle::new(x6, y6, 1.0).fill(true).stroke(false);
-        let circle6 = Styled::new(circle6).fill("#bbbbbb");
-        circle6.draw(&my_canvas);
-
-        // Circle 7
-        let (x7, y7) = (3.0 * t + 1.0).sin_cos();
-        let x7 = x4 + x7 * 35.0;
-        let y7 = y4 + y7 * 35.0;
-        let circle7 = Circle::new(x7, y7, 1.0).fill(true).stroke(false);
-        let circle7 = Styled::new(circle7).fill("#bbbbbb");
-        circle7.draw(&my_canvas);
+        // Draw system
+        sun.draw(&my_canvas);
+        red_planet.draw(&my_canvas);
+        blue_planet.draw(&my_canvas);
+        inner_moon.draw(&my_canvas);
+        gas_giant.draw(&my_canvas);
+        gg_moon_1.draw(&my_canvas);
+        gg_moon_2.draw(&my_canvas);
+        gg_moon_3.draw(&my_canvas);
+        ice_giant.draw(&my_canvas);
+        ig_moon_1.draw(&my_canvas);
     })
     .expect("Failed to create loop");
 
